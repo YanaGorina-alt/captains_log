@@ -12,13 +12,20 @@ class Index extends React.Component {
 
 
                     return(
-                        <li key={i}>
-                            <a href={`logs/${log._id}`}>{log.title}</a>
-                            <p>Created at: {formattedDate}</p>
-                        </li>
+                        <div>
+                            <li key={i}>
+                                <a href={`logs/${log._id}`}>{log.title}</a>
+                                <p>Created at: {formattedDate}</p>
+                            </li>
+                            <a href={`logs/${log._id}/edit`}> EDIT THIS LOG</a>
+                            <form action= {`/logs/${log._id}?_method=DELETE`} method="POST">
+                            <input type = "submit" value="DELETE" />
+                            </form> 
+                        </div> 
                     )
                 })}
             </ul>
+                      
             <a href={'/logs/new'}> Create a new log</a>
         </div>
        ) 
