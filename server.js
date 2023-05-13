@@ -45,8 +45,13 @@ app.use(express.static("public"));
 
 
 //INDEX
-app.get('/logs' ,(req,res) =>{
-    res.send('Index page')
+app.get('/logs' , async(req,res) =>{
+    try {
+        const foundLogs = await Log.find({});
+        res.status(200).render('Index', { logs: foundLogs });
+      } catch (err) {
+        res.status(400).send(err);
+      }
 });
 
 //NEW 
