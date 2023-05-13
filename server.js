@@ -72,24 +72,24 @@ app.delete('/logs/:id', async (req,res)=>{
 })
 
 //UPDATE
-// app.put('/:id', async (req, res) => {
-//     try {
-//       req.body.shipIsBroken = req.body.shipIsBroken === 'on';
-//       const updatedLog = await Log.findByIdAndUpdate(
-//         // id grabbed from the url, check ln 15 on Edit.jsx
-//         req.params.id,
-//         // Data from Edit form
-//         req.body,
-//         // Need this to prevent a delay in the update
-//         { new: true }
-//       );
-//       console.log(updatedFruit);
-//       // Redirect to that fruit's show page
-//       res.redirect(`/fruits/${req.params.id}`);
-//     } catch (err) {
-//       res.status(400).send(err);
-//     }
-//   });
+app.put('/logs/:id', async (req, res) => {
+    try {
+      req.body.shipIsBroken = req.body.shipIsBroken === 'on';
+      const updatedLog = await Log.findByIdAndUpdate(
+        // id grabbed from the url, check ln 15 on Edit.jsx
+        req.params.id,
+        // Data from Edit form
+        req.body,
+        // Need this to prevent a delay in the update
+        { new: true }
+      );
+      console.log(updatedLog);
+      // Redirect to that fruit's show page
+      res.redirect(`/logs/${req.params.id}`);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+});
 
 //CREATE
 app.post('/logs',async (req,res)=>{
