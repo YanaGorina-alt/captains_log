@@ -84,7 +84,7 @@ app.post('/logs',async (req,res)=>{
         const newLog = await Log.create(req.body);
         console.log(newLog);
         // redirect is making a GET request to whatever path you specify
-        res.send(req.body);
+        res.redirect(`/logs/${newLog._id}`);
       } catch (err) {
         res.status(400).send(err);
       }
