@@ -4,7 +4,8 @@ const app = express();
 const port = process.env.PORT || 3000;
 const { connect, connection } = require('mongoose');
 const methodOverride = require('method-override');
-const Log = require('./models/log');
+const logsController = require('./controllers/logsController');
+
 
 // Database connection
 connect(process.env.MONGO_URI, {
@@ -33,98 +34,28 @@ app.set('views', './views');
 // Middleware
 app.use(express.urlencoded({ extended: false })); // This enables the req.body
 app.use(express.json())
+//after app has been defined
+//use methodOverride.  We'll be adding a query parameter to our delete form named _method
+app.use(methodOverride('_method'));
+app.use(express.static("public"));
 // Custom Middleware
 app.use((req, res, next) => {
     console.log('Middleware running...');
     next();
   });
-//after app has been defined
-//use methodOverride.  We'll be adding a query parameter to our delete form named _method
-app.use(methodOverride('_method'));
-app.use(express.static("public"));
 
+// Routes
+app.use('/logs', logsController);
 
-//INDEX
-app.get('/logs' , async(req,res) =>{
-    try {
-        const foundLogs = await Log.find({});
-        res.status(200).render('Index', { logs: foundLogs });
-      } catch (err) {
-        res.status(400).send(err);
-      }
-});
-
-//NEW 
-app.get('/logs/new', (req,res)=>{
-    
-    res.render('New');
-})
-
-//DELETE
-app.delete('/logs/:id', async (req,res)=>{
-    try {
-        await Log.findByIdAndDelete(req.params.id)
-        res.status(200).redirect("/logs")
-    } catch (error) {
-        res.status(400).send(error);
-        
-    }
-})
-
-//UPDATE
-app.put('/logs/:id', async (req, res) => {
-    try {
-      req.body.shipIsBroken = req.body.shipIsBroken === 'on';
-      const updatedLog = await Log.findByIdAndUpdate(
-        // id grabbed from the url, check ln 15 on Edit.jsx
-        req.params.id,
-        // Data from Edit form
-        req.body,
-        // Need this to prevent a delay in the update
-        { new: true }
-      );
-      console.log(updatedLog);
-      // Redirect to that fruit's show page
-      res.redirect(`/logs/${req.params.id}`);
-    } catch (err) {
-      res.status(400).send(err);
-    }
-});
-
-//CREATE
-app.post('/logs',async (req,res)=>{
-    try {
-       req.body.shipIsBroken = req.body.shipIsBroken === 'on';
-        const newLog = await Log.create(req.body);
-        console.log(newLog);
-        // redirect is making a GET request to whatever path you specify
-        res.redirect(`/logs`);
-      } catch (err) {
-        res.status(400).send(err);
-      }
-     //res.send(req.body)
-})
-
-//EDIT
-app.get('/logs/:id/edit', async(req,res)=>{
-    try {
-       const foundLog = await Log.findById(req.params.id) 
-        res.render('Edit',{log: foundLog})
-    } catch (error) {
-        res.status(400).send(error)
-    }
-})
-
-//SHOW
-app.get('/logs/:id', async (req,res) => {
-    try {
-      const foundLog = await Log.findById(req.params.id)
-      res.render('Show', {log:foundLog})  
-    } catch (error) {
-        res.status(400).send(error);
-    }
-})
-
+//Catch all route. If the uses try to reach a route that doesn't match the ones above it will catch them and redirect to the Index page
+app.get('/*', (req, res) => {
+    res.send(`
+      <div>
+        404 this page doesn't exist! <br />
+        <a href="/logs">Logs</a> <br />
+      </div
+    `);
+  });
 
 
 app.listen(port, ()=>{
